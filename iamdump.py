@@ -36,9 +36,10 @@ class MetricsHandler(socketserver.BaseRequestHandler):
     def handle(self):
         data = json.loads(self.request[0].strip())
         service = translate_service(data["Service"])
-        api = data["Api"]
-        api_call = "{}:{}".format(service, api)
-        self.__class__.api_calls.add(api_call)
+        if service:
+            api = data["Api"]
+            api_call = "{}:{}".format(service, api)
+            self.__class__.api_calls.add(api_call)
 
     @classmethod
     def iam_policy_json(cls):
