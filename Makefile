@@ -3,7 +3,7 @@ $(eval PY_NAME := $(shell python setup.py --name | sed 's/-/_/g'))
 $(eval VERSION := $(shell python setup.py --version))
 
 SDIST = dist/$(NAME)-$(VERSION).tar.gz
-WHEEL := dist/$(PY_NAME)-$(VERSION)-py2.py3-none-any.whl
+WHEEL := dist/$(PY_NAME)-$(VERSION)-py3-none-any.whl
 
 .PHONY: all
 all:

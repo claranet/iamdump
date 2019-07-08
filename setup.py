@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="iamdump",
-    version="0.0.1",
+    version="0.0.2",
     author="Raymond Butcher",
     author_email="ray.butcher@claranet.uk",
     url="https://github.com/claranet/iamdump",
