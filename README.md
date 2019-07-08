@@ -2,7 +2,7 @@
 
 Like tcpdump for AWS IAM policies.
 
-This relies on [AWS SDK metrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Agent-SDK-Metrics.html). It should work for anything using the supported SDKs listed on that page.
+This relies on [AWS SDK Metrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Agent-SDK-Metrics.html). It should work for anything using the supported SDKs listed on that page.
 
 ## How it works
 
@@ -48,3 +48,7 @@ $ iamdump aws s3 ls
   ]
 }
 ```
+
+## Incorrect service names
+
+Service names in AWS SDK Metrics don't match up with IAM policy actions, so iamdump has to translate them. This is a young project, so some services may not be mapped correctly yet. If you encounter a policy with the wrong service name, please submit an issue or pull request so we can fix it.
