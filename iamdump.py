@@ -6,8 +6,10 @@ import threading
 
 service_map = {
     "applicationautoscaling": "application-autoscaling",
-    "cloudWatchevents": "events",
+    "cloudwatchevents": "events",
+    "cloudwatchlogs": "logs",
     "elasticloadbalancingv2": "elasticloadbalancing",
+    "elasticsearchservice": "es",
 }
 
 
