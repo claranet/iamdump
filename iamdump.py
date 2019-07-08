@@ -3,7 +3,6 @@ import os
 import socketserver
 import sys
 import threading
-import time
 
 service_map = {
     "applicationautoscaling": "application-autoscaling",
