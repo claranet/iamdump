@@ -13,6 +13,17 @@ service_map = {
 }
 
 
+action_map = {
+    "s3:GetBucketAccelerateConfiguration": "s3:GetAccelerateConfiguration",
+    "s3:GetBucketEncryption": "s3:GetEncryptionConfiguration",
+    "s3:GetBucketLifecycleConfiguration": "s3:GetLifecycleConfiguration",
+    "s3:GetBucketReplication": "s3:GetReplicationConfiguration",
+    "s3:GetObjectLockConfiguration": "s3:GetBucketObjectLockConfiguration",
+    "s3:HeadObject": "s3:GetObject",
+    "s3:ListObjects": "s3:ListBucket",
+}
+
+
 def translate_service(service):
     """
     Translates a service string from the JSON message
@@ -37,23 +48,36 @@ class MetricsHandler(socketserver.BaseRequestHandler):
 
     def handle(self):
         data = json.loads(self.request[0].strip())
-        service = translate_service(data["Service"])
-        if service:
-            api = data["Api"]
-            api_call = "{}:{}".format(service, api)
-            self.__class__.api_calls.add(api_call)
+        api_call = (data["Service"], data["Api"])
+        self.__class__.api_calls.add(api_call)
 
     @classmethod
     def iam_policy_json(cls):
+
+        actions = []
+        for service, api in cls.api_calls:
+
+            if not service:
+                continue
+
+            service = service.lower().replace(" ", "")
+            if service in service_map:
+                service = service_map[service]
+
+            action = "{}:{}".format(service, api)
+            if action in action_map:
+                action = action_map[action]
+
+            if action == "ec2metadata:GetMetadata":
+                continue
+
+            actions.append(action)
+
         return json.dumps(
             {
                 "Version": "2012-10-17",
                 "Statement": [
-                    {
-                        "Effect": "Allow",
-                        "Action": sorted(cls.api_calls),
-                        "Resource": "*",
-                    }
+                    {"Effect": "Allow", "Action": sorted(actions), "Resource": "*"}
                 ],
             },
             indent=2,
@@ -82,9 +106,6 @@ def cli():
         # and stop the server after the command has finished.
         exit_code = os.system(command)
         server.shutdown()
-
-    # This API call doesn't require an IAM policy so ignore it.
-    MetricsHandler.api_calls.discard("ec2metadata:GetMetadata")
 
     if MetricsHandler.api_calls:
         sys.stderr.write("\n")
